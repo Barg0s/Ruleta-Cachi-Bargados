@@ -7,13 +7,15 @@ import pygame
 import sys
 import utils
 import random
-
+#bg = pygame.image.load("C:/Users/david/Desktop/Mio/Ruleta-Cachi-Bargados/FichasCasino.png")
+#bg_image = pygame.transform.scale(bg,(860,680))
 # Definir colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
 RED = (255, 0, 0)  
 GREEN = (0, 255, 0)
+MARRON = (75,54,33)
 pygame.init()
 clock = pygame.time.Clock()
 rule = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
@@ -72,9 +74,9 @@ def app_run():
             voltes += 1
         if voltes >= max_voltes: # si supera el max frena
             speed -= 1
-        if speed <= 0:
+        if speed <= 0:  # Se detiene el giro
             girant = False
-            speed = 0
+
 
 
 # investigar como hacer que detecte el num 
@@ -82,9 +84,7 @@ def app_run():
 # math.floor > redondea hacia abajo
 # https://www.youtube.com/watch?v=WIIf3WaO5x4
 # 
-
-        
-        
+      
 
 
 # Dibuixar
@@ -93,7 +93,6 @@ def app_draw():
     
     # Pintar el fons de blanc
     screen.fill(WHITE)
-
     # Dibuixar la graella
     utils.draw_grid(pygame, screen, 50)
 
@@ -121,9 +120,9 @@ def app_draw():
         if i == 0:  
             color = GREEN
         elif i % 2 == 1: 
-            color = BLACK
+            color = RED
         else:  
-            color = RED       
+            color = BLACK       
         #DICCIONARIOS CON COORDENADAS
         points = [ #CIRCULO GRANDE
             (int(p0["x"]), int(p0["y"])),
@@ -168,6 +167,12 @@ def app_draw():
 
         screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2))) #dibuja los numeros en cada questio(del medio de cada quesito)
         pygame.draw.circle(screen,WHITE,(300,250),100,5)
+        #borde exterior
+        pygame.draw.circle(screen,BLACK,(300,250),150,2)
+       
+        #circulo madera
+        #pygame.draw.circle(screen,MARRON,(300,250),50)
+        pygame.draw.circle(screen,BLACK,(300,250),50,5)
         pygame.draw.polygon(screen,(255,255,0),coords,3)
     pygame.draw.circle(screen,BLUE,(300,90),5,5)
         # Actualitzar el dibuix a la finestra
@@ -179,7 +184,6 @@ def girar_ruleta(): #PARA RESETEAR VALORES
     girant = True
     speed = 50
     voltes = 0
-    angle = 0
 
 
 if __name__ == "__main__":

@@ -44,7 +44,6 @@ negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
 
 # Define the grid layout of the roulette betting table
 betting_table = [
-    [0],
     [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
     [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
     [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
@@ -84,8 +83,8 @@ betting_buttons = create_betting_buttons()
 # Define custom buttons for PAR, RED, BLACK, IMP
 custom_buttons = [
     {'label': 'PAR', 'x': button_start_x + button_width * 0, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},
-    {'label': '', 'x': button_start_x + button_width * 3, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': RED},
-    {'label': '', 'x': button_start_x + button_width * 6, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': BLACK},
+    {'label': 'RED', 'x': button_start_x + button_width * 3, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': RED},
+    {'label': 'BLACK', 'x': button_start_x + button_width * 6, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': BLACK,'text_color':WHITE},
     {'label': 'IMP', 'x': button_start_x + button_width * 9, 'y': button_start_y + button_height * 4, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK}
 ]
 
