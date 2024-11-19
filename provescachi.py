@@ -208,11 +208,7 @@ def app_draw():
         p2 = utils.point_on_circle(center, 150, fi_angle)
         p3 = utils.point_on_circle(center, 100, fi_angle)
 
-        # Points for smaller circle
-        p0_petit = utils.point_on_circle(center, 50, inici_angle)
-        p1_petit = utils.point_on_circle(center, 100, inici_angle)
-        p2_petit = utils.point_on_circle(center, 100, fi_angle)
-        p3_petit = utils.point_on_circle(center, 50, fi_angle)
+       
 
         # Colors for roulette
         color = GREEN if i == 0 else RED if i % 2 == 1 else BLACK
@@ -225,13 +221,7 @@ def app_draw():
             (int(p3["x"]), int(p3["y"]))
         ]
 
-        points_petit = [
-            (int(p0_petit["x"]), int(p0_petit["y"])),
-            (int(p1_petit["x"]), int(p1_petit["y"])),
-            (int(p2_petit["x"]), int(p2_petit["y"])),
-            (int(p3_petit["x"]), int(p3_petit["y"]))
-        ]
-
+        
         coords = [  # Arrow pointing at the top
             (290, 90),
             (310, 90),
@@ -240,7 +230,6 @@ def app_draw():
 
         # Draw polygons and numbers on the wheel
         pygame.draw.polygon(screen, color, points)
-        pygame.draw.polygon(screen, color, points_petit)
         
         # Place the number in the center of each roulette segment
         centre_quesito = utils.point_on_circle(center, 140, (inici_angle + fi_angle) / 2)
