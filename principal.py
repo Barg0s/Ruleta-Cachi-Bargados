@@ -91,15 +91,7 @@ def gestionar_nums(num):
     historial_ganador.append(num)
     if len(historial_ganador) > 10:
         historial_ganador.pop(0)
-
-# Dibujar
-def app_draw():
-    # Pintar el fondo de blanco
-    screen.fill(WHITE)
-    # Dibujar la cuadrícula
-    utils.draw_grid(pygame, screen, 50)
-
-    # Dibujar las casillas de la ruleta
+def dibujar_ruleta():
     center = {"x": 300, "y": 250}
 
     for i, casella in enumerate(rule):
@@ -128,13 +120,15 @@ def app_draw():
             (int(p3["x"]), int(p3["y"]))
         ]
 
-         #DIBUJO FLECHA
+        # DIBUJAR FLECHA
         coords_flecha = [
-        (300 - 10, 50),
-        (300 + 10, 50),
-        (300, 105)]
-        pygame.draw.polygon(screen,BLUE,coords_flecha)
-        pygame.draw.polygon(screen,BLACK,coords_flecha,2)
+            (300 - 10, 50),
+            (300 + 10, 50),
+            (300, 105)
+        ]
+        pygame.draw.polygon(screen, BLUE, coords_flecha)
+        pygame.draw.polygon(screen, BLACK, coords_flecha, 2)
+
         # Dibujar los polígonos
         pygame.draw.polygon(screen, color, points)
 
@@ -149,12 +143,31 @@ def app_draw():
         txt = fontnum.render(str(casella), True, color_num)
         screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2)))  # Dibujar el número en cada casilla
 
-    # Dibujar el borde exterior y el círculo central
-    pygame.draw.circle(screen, WHITE, (300, 250), 100, 5)
-    pygame.draw.circle(screen, BLACK, (300, 250), 150, 2)
-    pygame.draw.circle(screen, BLACK, (300, 250), 50, 5)
-    pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)
+# Función para dibujar el historial de los ganadores
+def dibujar_historial():
+    if seleccionado is not None:
+        x = 430
+        font = pygame.font.SysFont("Arial", 22)
+        for num in historial_ganador:
+            texto_seleccion = font.render(f"{num},", True, BLUE)
+            screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
+            x += 35
+# Dibujar
+def app_draw():
+    # Pintar el fondo de blanco
+    screen.fill(WHITE)
+    # Dibujar la cuadrícula
+    utils.draw_grid(pygame, screen, 50)
 
+    # Dibujar las casillas de la ruleta
+    dibujar_ruleta()
+    pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)
+    mostrar_guanyadors()
+
+    pygame.display.update()
+
+
+def mostrar_guanyadors():
     # Actualizar la pantalla
     if seleccionado is not None:
         x = 430
@@ -163,7 +176,6 @@ def app_draw():
             texto_seleccion = font.render(f"{num},", True, BLUE)
             screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
             x += 35
-    pygame.display.update()
 
 if __name__ == "__main__":
     main()
