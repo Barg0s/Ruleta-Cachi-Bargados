@@ -1,40 +1,37 @@
 #!/usr/bin/env python3
 
-import math
-import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import sys
 import utils
 import random
-#bg = pygame.image.load("C:/Users/david/Desktop/Mio/Ruleta-Cachi-Bargados/FichasCasino.png")
-#bg_image = pygame.transform.scale(bg,(860,680))
-# Definir colors
+
+# Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
 RED = (255, 0, 0)  
 GREEN = (0, 255, 0)
-MARRON = (75,54,33)
+MARRON = (75, 54, 33)
+
 pygame.init()
 clock = pygame.time.Clock()
-rule = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
+historial_ganador = []
+rule = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
+angulo_actual = 265
+girando = False
+angulo_velocidad = 0
+seleccionado = None
 # Definir la finestra
 screen = pygame.display.set_mode((860, 680))
-pygame.display.set_caption('Window Title')
-mouse = {'x':-1,'y':-1}
+pygame.display.set_caption('Ruleta')
+mouse = {'x': -1, 'y': -1}
 
-#GIROS RULETA
-
-angle = 265 #orientacion pa que el 0 este pa arriba
-girant = False
-speed = 50
-voltes = 0
+# Definir botones
 buttons = [
-    {'name': 'girar', 'x': 500, 'y': 400,'width':50,'height':50, 'pressed': False}
+    {'name': 'girar', 'x': 500, 'y': 400, 'width': 50, 'height': 50, 'pressed': False}
 ]
 
-# Bucle de l'aplicació
+# Bucle de la aplicación
 def main():
     is_looping = True
 
@@ -43,148 +40,130 @@ def main():
         app_run()
         app_draw()
 
-        clock.tick(60) # Limitar a 60 FPS
+        clock.tick(60)  # Limitar a 60 FPS
 
-    # Fora del bucle, tancar l'aplicació
+    # Fuera del bucle, cerrar la aplicación
     pygame.quit()
     sys.exit()
 
-# Gestionar events
+def girar_ruleta():
+    global angulo_actual, angulo_velocidad, girando, seleccionado
+    if girando:
+        # Actualizar el ángulo actual
+        angulo_actual += angulo_velocidad
+        angulo_actual %= 360  # pa que el angulo no se pase de 360.
+        angulo_velocidad *= 0.98  # bajar la velocidad suave
+
+        if angulo_velocidad < 0.5:
+            girando = False
+            angulo_velocidad = 0
+
+            # El numero ganador
+            flecha_angulo = (270 - angulo_actual) % 360 # averiguar donde esta la flecha
+            segmento = int(flecha_angulo // (360 / len(rule))) #saber donde cayó la flecha( el // es para que divida a la baja)
+            seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
+            gestionar_nums(seleccionado)
+            print(f"Seleccionado: {seleccionado}")
+
+
+# Gestionar eventos
 def app_events():
-    global mouse
+    global mouse, angulo_actual, girando, angulo_velocidad, seleccionado
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
         elif event.type == pygame.MOUSEMOTION:
             mouse['x'], mouse['y'] = event.pos
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if utils.is_point_in_rect(mouse, buttons[0]):
-                girar_ruleta()
+            if utils.is_point_in_rect(mouse, buttons[0]) and not girando:
+                girando = True
+                angulo_velocidad = random.randint(1, 37)  # Velocidad random
+                print("¡Girando!")
+
+    girar_ruleta()  
+
     return True
 
-# Fer càlculs
 def app_run(): 
-    # para que de vueltas
-    global girant, speed , voltes, angle
-    max_voltes = random.randint(0,36) 
-    if girant: # mientras gira se le suma velocidad y vueltas
-        angle += speed
-        if angle > 360:
-            angle -= 360
-            voltes += 1
-        if voltes >= max_voltes: # si supera el max frena
-            speed -= 1
-        if speed <= 0:  # Se detiene el giro
-            girant = False
+    pass  
 
+def gestionar_nums(num):
+    historial_ganador.append(num)
+    if len(historial_ganador) > 10:
+        historial_ganador.pop(0)
 
-
-# investigar como hacer que detecte el num 
-# angulo aprox quesito 9.7
-# math.floor > redondea hacia abajo
-# https://www.youtube.com/watch?v=WIIf3WaO5x4
-# 
-      
-
-
-# Dibuixar
-
+# Dibujar
 def app_draw():
-    
-    # Pintar el fons de blanc
+    # Pintar el fondo de blanco
     screen.fill(WHITE)
-    # Dibuixar la graella
+    # Dibujar la cuadrícula
     utils.draw_grid(pygame, screen, 50)
 
-    # Dibuixar les dades
+    # Dibujar las casillas de la ruleta
     center = {"x": 300, "y": 250}
-    
-    for i,casella in enumerate(rule): 
-        inici_angle = (360 / 37) * i + angle # donde empieza el angulo pa dibujar el quesito
-        fi_angle = (360 / 37) * (i + 1) + angle #donde acaba.
 
-        #PUNTS POLIGON(CIRCULO GRANDE)
-        p0 = utils.point_on_circle(center,100,inici_angle)
-        p1 = utils.point_on_circle(center,150,inici_angle)
-        p2 = utils.point_on_circle(center,150,fi_angle)
-        p3 = utils.point_on_circle(center,100,fi_angle)
+    for i, casella in enumerate(rule):
+        inici_angle = (360 / 37) * i  # Ángulo inicial para dibujar cada casilla
+        fi_angle = (360 / 37) * (i + 1)  # Ángulo final
 
-        #PUNTS POLIGON PETIT(CIRCULO PEQUEÑOS)
-        p0_petit = utils.point_on_circle(center,50,inici_angle)
-        p1_petit = utils.point_on_circle(center,100,inici_angle)
-        p2_petit = utils.point_on_circle(center,100,fi_angle)
-        p3_petit = utils.point_on_circle(center,50,fi_angle)
+        # PUNTOS DEL POLÍGONO (CÍRCULO GRANDE)
+        p0 = utils.point_on_circle(center, 100, inici_angle + angulo_actual)
+        p1 = utils.point_on_circle(center, 150, inici_angle + angulo_actual)
+        p2 = utils.point_on_circle(center, 150, fi_angle + angulo_actual)
+        p3 = utils.point_on_circle(center, 100, fi_angle + angulo_actual)
 
-
-        #COLORES RULETA
+        # COLORES DE LA RULETA
         if i == 0:  
             color = GREEN
         elif i % 2 == 1: 
             color = RED
         else:  
             color = BLACK       
-        #DICCIONARIOS CON COORDENADAS
-        points = [ #CIRCULO GRANDE
+
+        # DICCIONARIOS CON COORDENADAS
+        points = [  # CÍRCULO GRANDE
             (int(p0["x"]), int(p0["y"])),
             (int(p1["x"]), int(p1["y"])),
             (int(p2["x"]), int(p2["y"])),
             (int(p3["x"]), int(p3["y"]))
         ]
 
-        points_petit = [ #CIRCULO PEQUEÑO
-            (int(p0_petit["x"]), int(p0_petit["y"])),
-            (int(p1_petit["x"]), int(p1_petit["y"])),
-            (int(p2_petit["x"]), int(p2_petit["y"])),
-            (int(p3_petit["x"]), int(p3_petit["y"]))
-        ]
-
-        coords = [ #FLECHITA
-        ((290),(90)),
-        ((310),(90)),
-        ((300),(115))
-
-    ]
-
-
-        # Draw polygon between consecutive lines
+         #DIBUJO FLECHA
+        coords_flecha = [
+        (300 - 10, 50),
+        (300 + 10, 50),
+        (300, 105)]
+        pygame.draw.polygon(screen,BLUE,coords_flecha)
+        pygame.draw.polygon(screen,BLACK,coords_flecha,2)
+        # Dibujar los polígonos
         pygame.draw.polygon(screen, color, points)
-        pygame.draw.polygon(screen, color, points_petit)
-        centre_quesito = utils.point_on_circle(center,140,(inici_angle + fi_angle) / 2)
+
+        # Dibujar el número en el centro de cada casilla
+        centre_quesito = utils.point_on_circle(center, 140, (inici_angle + fi_angle) / 2 + angulo_actual)
         fontnum = pygame.font.SysFont("Arial", 15)
         if color == BLACK:
             color_num = WHITE
         else:
             color_num = BLACK   
-            
-
 
         txt = fontnum.render(str(casella), True, color_num)
+        screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2)))  # Dibujar el número en cada casilla
 
+    # Dibujar el borde exterior y el círculo central
+    pygame.draw.circle(screen, WHITE, (300, 250), 100, 5)
+    pygame.draw.circle(screen, BLACK, (300, 250), 150, 2)
+    pygame.draw.circle(screen, BLACK, (300, 250), 50, 5)
+    pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)
 
-        pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)
-
-
-
-        screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2))) #dibuja los numeros en cada questio(del medio de cada quesito)
-        pygame.draw.circle(screen,WHITE,(300,250),100,5)
-        #borde exterior
-        pygame.draw.circle(screen,BLACK,(300,250),150,2)
-       
-        #circulo madera
-        #pygame.draw.circle(screen,MARRON,(300,250),50)
-        pygame.draw.circle(screen,BLACK,(300,250),50,5)
-        pygame.draw.polygon(screen,(255,255,0),coords,3)
-    pygame.draw.circle(screen,BLUE,(300,90),5,5)
-        # Actualitzar el dibuix a la finestra
+    # Actualizar la pantalla
+    if seleccionado is not None:
+        x = 430
+        font = pygame.font.SysFont("Arial",22)
+        for num in historial_ganador:
+            texto_seleccion = font.render(f"{num},", True, BLUE)
+            screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
+            x += 35
     pygame.display.update()
-
-
-def girar_ruleta(): #PARA RESETEAR VALORES
-    global girant,speed,voltes,angle 
-    girant = True
-    speed = 50
-    voltes = 0
-
 
 if __name__ == "__main__":
     main()
