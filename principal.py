@@ -4,7 +4,7 @@ import pygame
 import sys
 import utils
 import random
-
+import tauler as t
 # Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -25,10 +25,11 @@ seleccionado = None
 screen = pygame.display.set_mode((860, 680))
 pygame.display.set_caption('Ruleta')
 mouse = {'x': -1, 'y': -1}
+font = pygame.font.SysFont("Arial",22)
 
 # Definir botones
 buttons = [
-    {'name': 'girar', 'x': 500, 'y': 400, 'width': 50, 'height': 50, 'pressed': False}
+    {'name': 'girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False}
 ]
 
 # Bucle de la aplicación
@@ -66,6 +67,7 @@ def girar_ruleta():
             print(f"Seleccionado: {seleccionado}")
 
 
+
 # Gestionar eventos
 def app_events():
     global mouse, angulo_actual, girando, angulo_velocidad, seleccionado
@@ -79,6 +81,12 @@ def app_events():
                 girando = True
                 angulo_velocidad = random.randint(1, 37)  # Velocidad random
                 print("¡Girando!")
+            for button in t.betting_buttons:
+                if utils.is_point_in_rect(mouse,button):
+                    print(f"button {button['number']}!")
+            for button_apostar in t.custom_buttons:
+                if utils.is_point_in_rect(mouse,button_apostar):
+                    print(f"Custom Button {button_apostar.get('label', 'RED/BLACK')} clicked!")  # Handle custom button click here
 
     girar_ruleta()  
 
@@ -122,8 +130,8 @@ def dibujar_ruleta():
 
         # DIBUJAR FLECHA
         coords_flecha = [
-            (300 - 10, 50),
-            (300 + 10, 50),
+            (300 - 10, 80),
+            (300 + 10, 80),
             (300, 105)
         ]
         pygame.draw.polygon(screen, BLUE, coords_flecha)
@@ -144,14 +152,6 @@ def dibujar_ruleta():
         screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2)))  # Dibujar el número en cada casilla
 
 # Función para dibujar el historial de los ganadores
-def dibujar_historial():
-    if seleccionado is not None:
-        x = 430
-        font = pygame.font.SysFont("Arial", 22)
-        for num in historial_ganador:
-            texto_seleccion = font.render(f"{num},", True, BLUE)
-            screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
-            x += 35
 # Dibujar
 def app_draw():
     # Pintar el fondo de blanco
@@ -159,9 +159,17 @@ def app_draw():
     # Dibujar la cuadrícula
     utils.draw_grid(pygame, screen, 50)
 
+    t.draw_custom_buttons(screen)
+    t.draw_betting_buttons(screen)
+
+
     # Dibujar las casillas de la ruleta
     dibujar_ruleta()
-    pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)
+    text_girar = font.render(buttons[0]["name"],True, WHITE)
+    pygame.draw.rect(screen, BLUE, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"])) #boton(provisional)
+    pygame.draw.rect(screen, BLACK, (buttons[0]["x"], buttons[0]["y"], buttons[0]["width"], buttons[0]["height"]), 5) #boton(provisional)    screen.blit(text_girar,(525, 415))
+    screen.blit(text_girar,(525, 415))
+
     mostrar_guanyadors()
 
     pygame.display.update()
@@ -171,7 +179,6 @@ def mostrar_guanyadors():
     # Actualizar la pantalla
     if seleccionado is not None:
         x = 430
-        font = pygame.font.SysFont("Arial",22)
         for num in historial_ganador:
             texto_seleccion = font.render(f"{num},", True, BLUE)
             screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
