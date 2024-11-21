@@ -24,7 +24,7 @@ def gestio_turns(screen, font, jugadors, idx,apostar):
     jugador_text = font.render(f"Jugador {jugador_actual}", True, BLACK)
     diners_jugador = jugadors[idx]['diners']
     diners_text = font.render(f"Saldo: {diners_jugador}",True,BLACK)
-    pygame.draw.rect(screen, color_actual, (700, 50, 150, 100))    
+    pygame.draw.rect(screen, color_actual, (700, 50, 150, 50))    
     screen.blit(jugador_text, (700, 50))
     screen.blit(diners_text,(700,75))
     if apostar:

@@ -84,8 +84,11 @@ def draw_custom_buttons(screen):
         
         if 'label' in button and button['label']:  
             font = pygame.font.SysFont("Arial", 15)
-            label = font.render(str(button['label']), True, BLACK)
-            
+            if button['label'] == 'BLACK':
+                color = WHITE
+            else:
+                color  = BLACK
+            label = font.render(str(button['label']), True, color)
             # Calcular la posición para centrar el texto dentro del botón
             text_x = rect.x + (button['width'] - label.get_width()) / 2
             text_y = rect.y + (button['height'] - label.get_height()) / 2

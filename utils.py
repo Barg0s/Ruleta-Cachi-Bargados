@@ -84,7 +84,7 @@ def draw_grid(pygame, screen, size):
     font = pygame.font.SysFont("Arial", 16)
     width, height = screen.get_size()
 
-    grid_color = (100, 100, 100)
+    grid_color = (255, 255, 255)
     
     for x in range(0, width, size):
         pygame.draw.line(screen, grid_color, (x, 0), (x, height))

@@ -14,10 +14,13 @@ BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
 RED = (255, 0, 0)  
 GREEN = (0, 255, 0)
-MARRON = (75, 54, 33)
+MARRON = (151, 91, 57)
 GOLD = (255,215,0)
 CENICA = (138,149,151)
+VERDE = (0, 100, 0)
 circulo_ruleta = pygame.image.load("circuloruleta.png")
+fondo = pygame.image.load("casinofondo.png")
+buen_fondo = pygame.transform.scale(fondo,(860,680))
 pygame.init()
 clock = pygame.time.Clock()
 historial_ganador = []
@@ -36,8 +39,8 @@ font = pygame.font.SysFont("Arial",22)
 
 # Definir botones
 buttons = [
-    {'name': 'girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
-    {'name': 'Apostar', 'x': 700, 'y': 400, 'width': 100, 'height': 50, 'pressed': False}
+    {'name': 'Girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
+    {'name': 'Apostar', 'x': 650, 'y': 400, 'width': 100, 'height': 50, 'pressed': False}
 ]
 
 # Bucle de la aplicación
@@ -86,7 +89,7 @@ def app_events():
             mouse['x'], mouse['y'] = event.pos
         elif event.type == pygame.MOUSEBUTTONDOWN:
             for button in buttons:
-                if utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "girar":
+                if utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Girar":
                     girando = True
                     angulo_velocidad = random.randint(5, 37)  # Velocidad random
                     print("¡Girando!")
@@ -170,14 +173,17 @@ def dibujar_ruleta():
 # Dibujar
 def app_draw():
     # Pintar el fondo de blanco
+
     screen.fill(WHITE)
     # Dibujar la cuadrícula
+    screen.blit(buen_fondo,(0,0))
     utils.draw_grid(pygame, screen, 50)
 
     t.draw_custom_buttons(screen)
     t.draw_betting_buttons(screen)
     jd.gestio_turns(screen,font,j.jugadors,idx,apostar)
     pygame.draw.circle(screen,CENICA,(300,250),100)   
+
     screen.blit(circulo_ruleta, (230, 180))
 
     pygame.draw.circle(screen,GOLD,(300,250),100,5)    
@@ -190,10 +196,10 @@ def app_draw():
     for button in buttons:
         text_girar = font.render(buttons[0]["name"],True, WHITE)
         text_apostar = font.render(buttons[1]["name"],True, WHITE)
-        pygame.draw.rect(screen, BLUE, (button["x"], button["y"], button["width"], button["height"])) #boton(provisional)
+        pygame.draw.rect(screen, MARRON, (button["x"], button["y"], button["width"], button["height"])) #boton(provisional)
         pygame.draw.rect(screen, BLACK, (button["x"], button["y"], button["width"], button["height"]), 5) #boton(provisional)    screen.blit(text_girar,(525, 415))
         screen.blit(text_girar,(525, 415))
-        screen.blit(text_apostar,(710, 415))
+        screen.blit(text_apostar,(665, 415))
 
     mostrar_guanyadors()
 
@@ -204,8 +210,8 @@ def mostrar_guanyadors():
     # Actualizar la pantalla
     if seleccionado is not None:
         x = 430
-        for num in historial_ganador:
-            texto_seleccion = font.render(f"{num},", True, BLUE)
+        for num in historial_ganador: 
+            texto_seleccion = font.render(f"{num},", True, BLACK)
             screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
             x += 35
 
