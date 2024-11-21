@@ -178,7 +178,9 @@ def app_draw():
     jd.gestio_turns(screen,font,j.jugadors,idx,apostar)
     screen.blit(circulo_ruleta, (230, 180))
     pygame.draw.circle(screen,GOLD,(300,250),100,5)    
-    pygame.draw.circle(screen,GOLD,(300,250),70,5)   
+    pygame.draw.circle(screen,GOLD,(300,250),70,5)
+    pygame.draw.circle(screen,GOLD,(300,250),154,5)   
+   
     dibujar_ruleta()
 
     for button in buttons:
