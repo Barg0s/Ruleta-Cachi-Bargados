@@ -7,7 +7,7 @@ import random
 import tauler as t
 import jugadors as j
 
-import jugadors_dades as jd
+import jugadors_screen as js
 # Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -91,7 +91,7 @@ def app_events():
                 elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Apostar":
                     apostar = True
                     print("Apuesta hecha!")
-                    idx = jd.gestio_turns(screen, font, j.jugadors, idx, apostar)  # Cambio de jugador 
+                    idx = js.gestio_turns(screen, font, j.jugadors, idx, apostar)  # Cambio de jugador 
                     apostar = False  
             for button in t.betting_buttons:
                 if utils.is_point_in_rect(mouse, button):
@@ -174,7 +174,7 @@ def app_draw():
 
     t.draw_custom_buttons(screen)
     t.draw_betting_buttons(screen)
-    jd.gestio_turns(screen,font,j.jugadors,idx,apostar)
+    js.gestio_turns(screen,font,j.jugadors,idx,apostar)
     # Dibujar las casillas de la ruleta
     dibujar_ruleta()
 
