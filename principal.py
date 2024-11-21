@@ -15,7 +15,8 @@ BLUE = (50, 120, 200)
 RED = (255, 0, 0)  
 GREEN = (0, 255, 0)
 MARRON = (75, 54, 33)
-
+GOLD = (255,215,0)
+circulo_ruleta = pygame.image.load("circuloruleta.png")
 pygame.init()
 clock = pygame.time.Clock()
 historial_ganador = []
@@ -175,7 +176,9 @@ def app_draw():
     t.draw_custom_buttons(screen)
     t.draw_betting_buttons(screen)
     jd.gestio_turns(screen,font,j.jugadors,idx,apostar)
-    # Dibujar las casillas de la ruleta
+    screen.blit(circulo_ruleta, (230, 180))
+    pygame.draw.circle(screen,GOLD,(300,250),100,5)    
+    pygame.draw.circle(screen,GOLD,(300,250),70,5)   
     dibujar_ruleta()
 
     for button in buttons:
