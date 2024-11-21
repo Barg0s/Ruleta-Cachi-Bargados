@@ -86,7 +86,7 @@ def app_events():
             for button in buttons:
                 if utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "girar":
                     girando = True
-                    angulo_velocidad = random.randint(1, 37)  # Velocidad random
+                    angulo_velocidad = random.randint(5, 37)  # Velocidad random
                     print("¡Girando!")
                 elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Apostar":
                     apostar = True
