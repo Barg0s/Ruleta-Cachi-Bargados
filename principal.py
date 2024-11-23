@@ -177,7 +177,6 @@ def app_draw():
     screen.fill(WHITE)
     # Dibujar la cuadrícula
     screen.blit(buen_fondo,(0,0))
-    utils.draw_grid(pygame, screen, 50)
 
     t.draw_custom_buttons(screen)
     t.draw_betting_buttons(screen)
