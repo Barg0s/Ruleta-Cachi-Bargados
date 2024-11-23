@@ -1,7 +1,7 @@
 import math
 import pygame
 import sys
-
+import utils
 # Inicialización de Pygame y configuración de colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -52,8 +52,7 @@ def app_events():
 
             # Verificar si se hace clic en alguna ficha del tablero para arrastrarla
             for chip in chips:
-                dist = math.hypot(mouse_pos[0] - chip['x'], mouse_pos[1] - chip['y'])
-                if dist < chip['radius']:
+                if utils.is_point_in_circle({"x": mouse_pos[0], "y": mouse_pos[1]}, {"x": chip['x'], "y": chip['y']}, chip['radius']):
                     dragging_chip = chip
                     offset_x = chip['x'] - mouse_pos[0]
                     offset_y = chip['y'] - mouse_pos[1]

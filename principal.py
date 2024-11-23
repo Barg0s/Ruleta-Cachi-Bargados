@@ -6,8 +6,8 @@ import utils
 import random
 import tauler as t
 import jugadors as j
-
 import jugadors_dades as jd
+import fichas as f
 # Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -171,12 +171,15 @@ def dibujar_ruleta():
 
 # Función para dibujar el historial de los ganadores
 # Dibujar
+
 def app_draw():
     # Pintar el fondo de blanco
 
     screen.fill(WHITE)
     # Dibujar la cuadrícula
+    
     screen.blit(buen_fondo,(0,0))
+    utils.draw_grid(pygame, screen, 50)
 
     t.draw_custom_buttons(screen)
     t.draw_betting_buttons(screen)
@@ -201,7 +204,7 @@ def app_draw():
         screen.blit(text_apostar,(665, 415))
 
     mostrar_guanyadors()
-
+    f.dibuixar_fitxes(screen,idx)
     pygame.display.update()
 
 

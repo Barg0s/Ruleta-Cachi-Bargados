@@ -1,7 +1,6 @@
 import math
 import pygame
 import sys
-import jugadors as j
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
