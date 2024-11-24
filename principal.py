@@ -204,7 +204,8 @@ def app_draw():
         screen.blit(text_apostar,(665, 415))
 
     mostrar_guanyadors()
-    f.dibuixar_fitxes(screen,idx)
+    f.afegir_fitxes(idx)
+    f.dibuixar_fitxes(screen)
     pygame.display.update()
 
 
