@@ -117,16 +117,16 @@ def app_events():
                 for button in betting_buttons:
                     button_rect = pygame.Rect(button['x'], button['y'], button['width'], button['height'])
                     if button_rect.collidepoint(dragging_chip['x'], dragging_chip['y']):
-                        num = button['number']
-                        jugador = next(jugador for jugador in jugadors if jugador["nom"] == dragging_chip["owner"])
-                        jugador["fitxes"][str(dragging_chip['value'])] -= 1
                         col = (button['x'] - carton_pos[0]) // carton_casilla_ancho
                         row = (button['y'] - carton_pos[1]) // carton_casilla_alto
+                        pos = row * carton_columnas + col
+                        jugador = next(jugador for jugador in jugadors if jugador["nom"] == dragging_chip["owner"])
+                        jugador["fitxes"][str(dragging_chip['value'])] -= 1
                         x_pos = carton_pos[0] + col * carton_casilla_ancho + carton_casilla_ancho // 2
                         y_pos = carton_pos[1] + row * carton_casilla_alto + carton_casilla_alto // 2
                         dragging_chip['x'] = x_pos
                         dragging_chip['y'] = y_pos
-                        apuestas.append({'jugador': dragging_chip['owner'], 'numero': num, 'value': dragging_chip['value'], 'color': dragging_chip['color']})
+                        apuestas.append({'jugador': dragging_chip['owner'], 'posicion': pos, 'value': dragging_chip['value'], 'color': dragging_chip['color']})
                         chips.remove(dragging_chip)
                         break
                 else:
@@ -147,8 +147,8 @@ def draw_chips():
 
 def draw_apuestas():
     for apuesta in apuestas:
-        col = (apuesta['numero'] - 1) % 12
-        row = (apuesta['numero'] - 1) // 12
+        col = apuesta['posicion'] % carton_columnas
+        row = apuesta['posicion'] // carton_columnas
         x = carton_pos[0] + col * carton_casilla_ancho + carton_casilla_ancho // 2
         y = carton_pos[1] + row * carton_casilla_alto + carton_casilla_alto // 2
         pygame.draw.circle(screen, apuesta['color'], (x, y), 20)
@@ -166,9 +166,10 @@ def main():
         draw_apuestas()
         draw_chips()
         pygame.draw.rect(screen, BLUE, boton_rect)
-        font = pygame.font.Font(None, 30)
-        label = font.render('Cambiar Turno', True, WHITE)
-        screen.blit(label, (boton_rect.x + (boton_rect.width - label.get_width()) / 2, boton_rect.y + (boton_rect.height - label.get_height()) / 2))
+        font = pygame.font.Font(None, 24)
+        text = font.render(f"Jugador: {jugadors[turno_actual]['nom']}", True, WHITE)
+        screen.blit(text, (20, 20))
+        pygame.draw.rect(screen, BLUE, boton_rect)
         pygame.display.flip()
         clock.tick(60)
 
