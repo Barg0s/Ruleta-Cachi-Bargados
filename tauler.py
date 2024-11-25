@@ -70,8 +70,8 @@ custom_buttons = [
     {'label': 'BLACK', 'x': button_start_x + button_width * 6, 'y': button_start_y + button_height * 3, 'width': button_width* 3, 'height': button_height, 'color': BLACK,'text_color':WHITE},
     {'label': 'IMP', 'x': button_start_x + button_width * 9, 'y': button_start_y + button_height * 3, 'width': button_width* 3, 'height': button_height, 'color': WHITE, 'text_color': BLACK},
     {'label': '2 to 1', 'x': 700, 'y': 450, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},
-    {'label': '2 to 1', 'x': 700 , 'y': 500, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},
-    {'label': '2 to 1', 'x': 700,'y': 550, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},]
+    {'label': '2 to 2', 'x': 700 , 'y': 500, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},
+    {'label': '2 to 3', 'x': 700,'y': 550, 'width': button_width, 'height': button_height, 'color': WHITE, 'text_color': BLACK},]
 
 def draw_custom_buttons(screen):
     for button in custom_buttons:
