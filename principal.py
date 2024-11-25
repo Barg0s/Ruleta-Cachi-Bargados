@@ -8,6 +8,7 @@ import tauler as t
 import jugadors as j
 import jugadors_dades as jd
 import fichas as f
+import historial as h
 # Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -24,6 +25,7 @@ buen_fondo = pygame.transform.scale(fondo,(860,680))
 pygame.init()
 clock = pygame.time.Clock()
 historial_ganador = []
+historial_complet = []
 rule = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
 angulo_actual = 265
 girando = False
@@ -40,7 +42,8 @@ font = pygame.font.SysFont("Arial",22)
 # Definir botones
 buttons = [
     {'name': 'Girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
-    {'name': 'Apostar', 'x': 650, 'y': 400, 'width': 100, 'height': 50, 'pressed': False}
+    {'name': 'Apostar', 'x': 650, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
+    {'name': 'Log', 'x': 650, 'y': 250, 'width': 100, 'height': 50, 'pressed': False}
 ]
 
 # Bucle de la aplicación
@@ -74,7 +77,7 @@ def girar_ruleta():
             flecha_angulo = (270 - angulo_actual) % 360 # averiguar donde esta la flecha
             segmento = int(flecha_angulo // (360 / len(rule))) #saber donde cayó la flecha( el // es para que divida a la baja)
             seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
-            gestionar_nums(seleccionado)
+            h.gestionar_nums(historial_ganador,seleccionado)
             print(f"Seleccionado: {seleccionado}")
 
 
@@ -113,10 +116,7 @@ def app_events():
 def app_run(): 
     pass  
 
-def gestionar_nums(num):
-    historial_ganador.append(num)
-    if len(historial_ganador) > 10:
-        historial_ganador.pop(0)
+
 def dibujar_ruleta():
     center = {"x": 300, "y": 250}
 
@@ -198,25 +198,19 @@ def app_draw():
     for button in buttons:
         text_girar = font.render(buttons[0]["name"],True, WHITE)
         text_apostar = font.render(buttons[1]["name"],True, WHITE)
+        text_log = font.render(buttons[2]["name"],True, WHITE)
         pygame.draw.rect(screen, MARRON, (button["x"], button["y"], button["width"], button["height"])) #boton(provisional)
         pygame.draw.rect(screen, BLACK, (button["x"], button["y"], button["width"], button["height"]), 5) #boton(provisional)    screen.blit(text_girar,(525, 415))
         screen.blit(text_girar,(525, 415))
         screen.blit(text_apostar,(665, 415))
+        screen.blit(text_log,(680, 265))
 
-    mostrar_guanyadors()
+    h.mostrar_guanyadors(screen,seleccionado,historial_ganador)
     f.afegir_fitxes(idx)
     f.dibuixar_fitxes(screen)
     pygame.display.update()
 
 
-def mostrar_guanyadors():
-    # Actualizar la pantalla
-    if seleccionado is not None:
-        x = 430
-        for num in historial_ganador: 
-            texto_seleccion = font.render(f"{num},", True, BLACK)
-            screen.blit(texto_seleccion, (x - texto_seleccion.get_width() // 2, 100))
-            x += 35
 
 if __name__ == "__main__":
     main()

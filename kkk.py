@@ -1,6 +1,7 @@
 import pygame
 import sys
 import tauler as t
+import jugadors as j
 import utils
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -20,7 +21,7 @@ apuestas = []
 mouse = {'x': -1, 'y': -1}
 
 button_start_x = 100
-button_start_y = 450
+button_start_y = 450        
 button_width = 50
 button_height = 50
 
@@ -33,11 +34,7 @@ betting_table = [
 rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
 negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
 
-jugadors = [
-    {"nom": "Bargos", "diners": 100, "fitxes": {"5": 5, "10": 1, "20": 0, "50": 0, "100": 2}, "aposta": [], "color": (255,128,0) },
-    {"nom": "Cachi", "diners": 100, "fitxes": {"5": 0, "10": 5, "20": 1, "50": 2, "100": 0}, "aposta": [], "color": (204,169,221)},
-    {"nom": "Albert", "diners": 100, "fitxes": {"5": 1, "10": 0, "20": 0, "50": 0, "100": 3}, "aposta": [], "color": (50, 120,200)}
-]
+jugadors = j.jugadors
 turno_actual = 0
 boton_rect = pygame.Rect(700, 20, 140, 40)
 
