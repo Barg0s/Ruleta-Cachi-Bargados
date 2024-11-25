@@ -11,49 +11,49 @@ BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-carton_pos = (100, 450)
-carton_casilla_ancho = 50
-carton_casilla_alto = 50
-carton_filas = 3
-carton_columnas = 12
-apuestas = []
 
-jugadors = j.jugadors
+def gestionar_especials(label, aposta_jugador):
+    negres = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+    vermells = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
 
-chips = []
-
-
-def afegir_fitxes(idx):
-    global chips
-    chips = []
-    jugador = jugadors[idx]
-    x_base = 800
-    y_base = 400
-    radius = 20
-    y_spacing = 2
-    for valor, cantidad in jugador["fitxes"].items():
-        y = y_base
-        for _ in range(cantidad):
-            chips.append({'value': int(valor), 'color': jugador["color"], 'x': x_base, 'y': y, 'radius': radius, 'owner': jugador["nom"]})
-            y += y_spacing
-        y_base += 60
-
-
-
-def dibuixar_fitxes(screen):
-    # Dibujar todas las fichas
-    for chip in chips:
-        for button in t.custom_buttons:
-            button_rect = pygame.Rect(button['x'], button['y'], button['width'], button['height'])
-            if button_rect.collidepoint(chip['x'], chip['y']):
-                pygame.draw.circle(screen, chip['color'], (chip['x'], chip['y']), chip['radius'])
-                font = pygame.font.Font(None, 24)
-                text = font.render(str(chip['value']), True, BLACK if chip['color'] != BLACK else WHITE)
-                screen.blit(text, (chip['x'] - text.get_width() // 2, chip['y'] - text.get_height() // 2))
-                break
+    parells = []
+    imparells = []
+    for i in range(1,37):
+        if i % 2 == 0:
+            parells.append(i)
         else:
-            pygame.draw.circle(screen, chip['color'], (chip['x'], chip['y']), chip['radius'])
-            font = pygame.font.Font(None, 24)
-            text = font.render(str(chip['value']), True, BLACK if chip['color'] != BLACK else WHITE)
-            screen.blit(text, (chip['x'] - text.get_width() // 2, chip['y'] - text.get_height() // 2))
+            imparells.append(i)
 
+    if label == "BLACK":
+        for negre in negres:
+            if negre not in aposta_jugador:
+                aposta_jugador.append(negre)
+    elif label == '0':
+        aposta_jugador.append(0)
+    elif label == "RED":
+        for vermell in vermells:
+            if vermell not in aposta_jugador:
+                aposta_jugador.append(vermell)
+    elif label == "PAR": 
+        for parell in parells:
+            if parell not in aposta_jugador:
+                aposta_jugador.append(parell)
+    elif label == "IMP":  # Números impares
+        for imparell in imparells:
+            if imparell not in aposta_jugador:
+                aposta_jugador.append(imparell)
+    elif label == "2 to 1":
+        for num in t.betting_table[0]:
+            if num not in aposta_jugador:
+                aposta_jugador.append(num)
+    elif label == "2 to 2":
+        for num in t.betting_table[1]:
+            if num not in aposta_jugador:
+                aposta_jugador.append(num)
+    elif label == "2 to 3":
+        for num in t.betting_table[2]:
+            if num not in aposta_jugador:
+                aposta_jugador.append(num)
+
+
+    print(aposta_jugador)
