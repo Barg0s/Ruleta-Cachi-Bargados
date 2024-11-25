@@ -200,11 +200,17 @@ def app_events():
                     for button in t.custom_buttons:
                         if utils.is_point_in_rect({'x': dragging_chip['x'], 'y': dragging_chip['y']}, button):
                             print(f"Ficha colocada en {button['label']} por {dragging_chip['owner']}")
+                            jugador_actual = None
+                            for jugador in j.jugadors:
+                                if jugador["nom"] == dragging_chip["owner"]:
+                                    jugador_actual = jugador
+                                    break  
+                            jugador_actual["fitxes"][str(dragging_chip['value'])] -= 1
                             dragging_chip['x'] = button['x'] + button['width'] // 2
                             dragging_chip['y'] = button['y'] + button['height'] // 2
                             apuestas.append({'jugador': dragging_chip['owner'], 'posicion': -1, 'value': dragging_chip['value'], 'color': dragging_chip['color'], 'label': button['label']})
-                            chips.remove(dragging_chip)
                             f.gestionar_especials(button['label'],j.jugadors[idx]["aposta"])
+                            chips.remove(dragging_chip)
                             break
                     else:
                         if dragging_chip['value'] == 5:
