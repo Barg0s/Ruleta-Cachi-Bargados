@@ -58,10 +58,89 @@ def distribuir_fitxes(jugadors, valors_fitxes):
 
 def comprobar_aposta(num):
     especials = ["RED", "BLACK", "PAR", "IMP", "2to1", "2to2", "2to3"]
-    for jugador in j.jugadors:
+    for jugador in j.jugadors:  # Cambiado de j.jugadors a jugadors
         apuesta_jugador = jugador["aposta"]
-        print(f"Jugador {jugador['tipus']} ha apostado: {apuesta_jugador}")  
-        repartir_premis(num) 
+        tipus = jugador["tipus"]
+
+        if tipus in especials:
+            print(f"Jugador {jugador['nom']} del tipus {tipus} ha apostat {apuesta_jugador}")
+            repartir_premis_especials(num, tipus, jugador)
+        else:
+            print(f"Jugador {jugador['nom']} del tipus: {tipus} ha apostado: {apuesta_jugador}")
+            repartir_premis(num, jugador)
+
+
+
+def obtener_valores_apuestas(num,apuestas,banca):
+    total = 0
+    for apuesta in apuestas:
+        total += apuesta['value']
+    if num not in apuestas:
+            banca['diners'] += total
+def repartir_premis_especials(num, tipus, jugador):
+    aposta = jugador["aposta"]
+
+    if tipus == "BLACK":
+        numeros_negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+        if num in numeros_negros:
+            premio = sum(aposta) * 2  #Valores provisionales
+            jugador["diners"] += premio
+            print(f"{jugador['nom']} ha ganado {premio} con su apuesta BLACK.")
+        else:
+            print(f"{jugador['nom']} ha perdido con su apuesta BLACK.")
+
+    elif tipus == "RED":
+        numeros_rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
+        if num in numeros_rojos:
+            premio = sum(aposta) * 2
+            jugador["diners"] += premio
+            print(f"{jugador['nom']} ha ganado {premio} con su apuesta RED.")
+
+    elif tipus == "PAR":
+        if num % 2 == 0:
+            premio = sum(aposta) * 2
+            jugador["diners"] += premio
+            print(f"{jugador['nom']} ha ganado {premio} con su apuesta PAR.")
+    elif tipus == "IMP":
+        if num % 2 != 0:
+            premio = sum(aposta) * 2
+            jugador["diners"] += premio
+            print(f"{jugador['nom']} ha ganado {premio} con su apuesta IMP.")
+    elif tipus == "2to1":
+         if num in t.betting_table[0]:
+            premio += 2
+            jugador["diners"] += premio
+    elif tipus == "2to2":
+         if num in t.betting_table[1]:
+            premio += 2
+            jugador["diners"] += premio
+    elif tipus == "2to3":
+         if num in t.betting_table[2]:
+            premio += 2
+            jugador["diners"] += premio
+    elif tipus == "0":
+         if 0 in aposta:
+              premio += 4
+              jugador["diners"] +=premio
+    
+
+
+def repartir_premis(num, jugador):
+    """Maneja premios para apuestas no especiales."""
+    aposta = jugador["aposta"]
+
+    # Verificar si aposta está vacía o no es válida
+    if not aposta or not isinstance(aposta, list):
+        print(f"{jugador['nom']} no ha realizado ninguna apuesta válida.")
+        return
+
+    # Suponiendo que la apuesta contiene números específicos (y si no es así, se puede ajustar)
+    if num in aposta:
+        premio = sum(aposta) * 36  # Paga 36x el monto apostado
+        jugador["diners"] += premio
+        print(f"{jugador['nom']} ha ganado {premio} con su apuesta directa.")
+    else:
+        print(f"{jugador['nom']} ha perdido con su apuesta directa.")
 
 
 def gestionar_especials(idx,tipus):
