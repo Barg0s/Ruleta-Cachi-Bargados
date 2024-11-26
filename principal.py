@@ -45,6 +45,7 @@ carton_casilla_ancho = 50
 carton_casilla_alto = 50
 carton_filas = 3
 carton_columnas = 12
+valors_fitxes = ([5,10,20,50,100])
 dragging_chip = None
 offset_x, offset_y = 0, 0
 # Definir botones
@@ -127,9 +128,14 @@ def girar_ruleta():
             seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
             h.gestionar_nums(historial_ganador,seleccionado)
             print(f"Seleccionado: {seleccionado}")
+            f.comprobar_aposta(seleccionado)
+            
 
 
-
+            apuestas.clear()
+            f.distribuir_fitxes(j.jugadors,valors_fitxes)
+            for jugador in j.jugadors:
+                jugador["tipus"] = None
 # Gestionar eventos
 dragging_chip = None  # Ficha actualmente siendo arrastrada
 offset_x, offset_y = 0, 0  # Desplazamiento del ratón
@@ -191,7 +197,9 @@ def app_events():
 
                         numero = t.betting_table[row][col]
                         print(f"Ficha colocada por {dragging_chip['owner']} en el número {numero}")
+                        j.jugadors[idx]["diners"] -= dragging_chip['value']
                         j.jugadors[idx]["aposta"].append(numero)
+                        j.jugadors[idx]["tipus"] = "Individual"
                         print(j.jugadors[idx]["aposta"])
                         chips.remove(dragging_chip)
                         break
@@ -209,7 +217,9 @@ def app_events():
                             dragging_chip['x'] = button['x'] + button['width'] // 2
                             dragging_chip['y'] = button['y'] + button['height'] // 2
                             apuestas.append({'jugador': dragging_chip['owner'], 'posicion': -1, 'value': dragging_chip['value'], 'color': dragging_chip['color'], 'label': button['label']})
-                            f.gestionar_especials(button['label'],j.jugadors[idx]["aposta"])
+                            j.jugadors[idx]["diners"] -= dragging_chip['value']
+                            j.jugadors[idx]["tipus"] = button['label']
+                            f.gestionar_especials(idx,button['label'])
                             chips.remove(dragging_chip)
                             break
                     else:
@@ -224,14 +234,11 @@ def app_events():
                         else:
                             dragging_chip['x'], dragging_chip['y'] = 800, 640
 
-
-
                 dragging_chip = None
         elif event.type == pygame.MOUSEMOTION and dragging_chip:
             mouse_pos = pygame.mouse.get_pos()
             dragging_chip['x'] = mouse_pos[0] - offset_x
             dragging_chip['y'] = mouse_pos[1] - offset_y
-
     girar_ruleta()
     return True
 def app_run(): 
@@ -327,7 +334,7 @@ def app_draw():
     # Dibujar fichas y apuestas
     dibuixar_fitxes()
     dibuixar_apostes()
-
+    f.contar_fitxes(screen,idx)
     pygame.display.update()  # Actualizar la pantalla
 
 
