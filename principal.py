@@ -9,6 +9,7 @@ import jugadors as j
 import fichas as f
 import jugadors_dades as jd
 import historial as h
+import surface as s
 # Definir colores
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -34,6 +35,7 @@ girando = False
 angulo_velocidad = 0
 seleccionado = None
 idx = 0
+mostrar_surface = False
 apostar = False
 # Definir la finestra
 screen = pygame.display.set_mode((860, 680))
@@ -45,14 +47,18 @@ carton_casilla_ancho = 50
 carton_casilla_alto = 50
 carton_filas = 3
 carton_columnas = 12
+valors_fitxes = ([5,10,20,50,100])
 dragging_chip = None
 offset_x, offset_y = 0, 0
+
 # Definir botones
 buttons = [
     {'name': 'Girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
     {'name': 'Apostar', 'x': 650, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
     {'name': 'Log', 'x': 650, 'y': 250, 'width': 100, 'height': 50, 'pressed': False}
 ]
+girando = False
+
 def afegir_fitxes():
     """Añade las fichas del jugador actual."""
     global chips
@@ -69,10 +75,15 @@ def afegir_fitxes():
             y += y_spacing
         y_base += 60
 
+
+
 def dibuixar_fitxes():
     """Dibuja las fichas activas y permite arrastrarlas."""
     for chip in chips:
+
         pygame.draw.circle(screen, chip['color'], (chip['x'], chip['y']), chip['radius'])
+        pygame.draw.circle(screen, BLACK, (chip['x'], chip['y']), chip['radius'],1)
+        pygame.draw.circle(screen, WHITE, (chip['x'], chip['y']), chip['radius'] - 5)
         font = pygame.font.Font(None, 24)
         text = font.render(str(chip['value']), True, BLACK if chip['color'] != BLACK else WHITE)
         screen.blit(text, (chip['x'] - text.get_width() // 2, chip['y'] - text.get_height() // 2))
@@ -89,6 +100,8 @@ def dibuixar_apostes():
             x = button['x'] + button['width'] // 2
             y = button['y'] + button['height'] // 2
         pygame.draw.circle(screen, apuesta['color'], (x, y), 20)
+        pygame.draw.circle(screen, BLACK, (x, y), 20,1)
+        pygame.draw.circle(screen, WHITE, (x, y), 15)
         font = pygame.font.Font(None, 24)
         text = font.render(str(apuesta['value']), True, BLACK if apuesta['color'] != BLACK else WHITE)
         screen.blit(text, (x - text.get_width() // 2, y - text.get_height() // 2))
@@ -126,16 +139,26 @@ def girar_ruleta():
             segmento = int(flecha_angulo // (360 / len(rule))) #saber donde cayó la flecha( el // es para que divida a la baja)
             seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
             h.gestionar_nums(historial_ganador,seleccionado)
+            print(apuestas)
             print(f"Seleccionado: {seleccionado}")
-
-
+            print("AAAAAAAAAAAAAAAAA")
+            print(f.obtener_valores_apuestas(seleccionado,apuestas,j.banca))
+            f.comprobar_aposta(seleccionado)
+            apuestas.clear()
+            for jugador in j.jugadors:
+                jugador["tipus"] = ""
 
 # Gestionar eventos
 dragging_chip = None  # Ficha actualmente siendo arrastrada
 offset_x, offset_y = 0, 0  # Desplazamiento del ratón
 
+    
+
+
+
+
 def app_events():
-    global mouse, angulo_actual, girando, angulo_velocidad, seleccionado, apostar, idx, dragging_chip, offset_x, offset_y
+    global mouse, angulo_actual, girando, angulo_velocidad, seleccionado, apostar, idx, dragging_chip, offset_x, offset_y,log_open,mostrar_surface
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
@@ -162,12 +185,17 @@ def app_events():
                         girando = True
                         angulo_velocidad = random.randint(5, 37)  # Velocidad random
                         print("¡Girando!")
+                    elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Log":
+                        mostrar_surface = True
                     elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Apostar":
                         apostar = True
                         print("Apuesta hecha!")
                         idx = jd.gestio_turns(screen, font, j.jugadors, idx, apostar)
                          # Añadir fichas para el siguiente jugador
                         apostar = False
+                        f.distribuir_fitxes(j.jugadors,valors_fitxes)
+                        afegir_fitxes()
+
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if dragging_chip:
@@ -191,7 +219,9 @@ def app_events():
 
                         numero = t.betting_table[row][col]
                         print(f"Ficha colocada por {dragging_chip['owner']} en el número {numero}")
+                        j.jugadors[idx]["diners"] -= dragging_chip['value']
                         j.jugadors[idx]["aposta"].append(numero)
+                        j.jugadors[idx]["tipus"] = "Individual"
                         print(j.jugadors[idx]["aposta"])
                         chips.remove(dragging_chip)
                         break
@@ -209,7 +239,9 @@ def app_events():
                             dragging_chip['x'] = button['x'] + button['width'] // 2
                             dragging_chip['y'] = button['y'] + button['height'] // 2
                             apuestas.append({'jugador': dragging_chip['owner'], 'posicion': -1, 'value': dragging_chip['value'], 'color': dragging_chip['color'], 'label': button['label']})
-                            f.gestionar_especials(button['label'],j.jugadors[idx]["aposta"])
+                            j.jugadors[idx]["diners"] -= dragging_chip['value']
+                            j.jugadors[idx]["tipus"] = button['label']
+                            f.gestionar_especials(idx,button['label'])
                             chips.remove(dragging_chip)
                             break
                     else:
@@ -224,15 +256,13 @@ def app_events():
                         else:
                             dragging_chip['x'], dragging_chip['y'] = 800, 640
 
-
-
                 dragging_chip = None
         elif event.type == pygame.MOUSEMOTION and dragging_chip:
             mouse_pos = pygame.mouse.get_pos()
             dragging_chip['x'] = mouse_pos[0] - offset_x
             dragging_chip['y'] = mouse_pos[1] - offset_y
-
     girar_ruleta()
+
     return True
 def app_run(): 
     pass  
@@ -297,12 +327,12 @@ def app_draw():
     # Pintar el fondo de blanco
     screen.fill(WHITE)
     screen.blit(buen_fondo, (0, 0))  # Fondo de casino
-    utils.draw_grid(pygame, screen, 50)  # Dibujar la cuadrícula
-
+    jd.dibuixar_banca(screen,font,j.banca)
     t.draw_custom_buttons(screen)  # Dibujar botones personalizados
     t.draw_betting_buttons(screen)  # Dibujar botones de apuestas
     jd.gestio_turns(screen, font, j.jugadors, idx, apostar)  # Mostrar turno del jugador
     pygame.draw.circle(screen, CENICA, (300, 250), 100)  # Dibujar el círculo de la ruleta
+    utils.draw_grid(pygame, screen, 50)
 
     screen.blit(circulo_ruleta, (230, 180))  # Dibujar la imagen de la ruleta
     pygame.draw.circle(screen, GOLD, (300, 250), 100, 5)  # Círculos de bordes dorados
@@ -324,10 +354,13 @@ def app_draw():
 
     h.mostrar_guanyadors(screen, seleccionado, historial_ganador)  # Mostrar historial de ganadores
 
+
     # Dibujar fichas y apuestas
     dibuixar_fitxes()
     dibuixar_apostes()
-
+    f.contar_fitxes(screen,idx)
+    if mostrar_surface:
+        s.dibuixar_surface(screen,font,mostrar_surface)
     pygame.display.update()  # Actualizar la pantalla
 
   

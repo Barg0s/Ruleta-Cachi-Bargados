@@ -34,3 +34,17 @@ def gestio_turns(screen, font, jugadors, idx,apostar):
         
         return idx  
 
+def dibuixar_banca(screen,font,banca):
+    jugador_text = font.render("BANCA", True, BLACK)
+    diners_banca = banca['diners']
+    diners_text = font.render(f"Saldo: {diners_banca}",True,BLACK)
+    pygame.draw.rect(screen, WHITE, (400, 50, 150, 50))    
+    screen.blit(jugador_text, (450, 50))
+    screen.blit(diners_text,(435,75))
+
+
+def sumar_banca(jugadors,banca):
+        diners_banca = banca['diners']
+        for jugador in jugadors:
+            valors = int(jugador['value'])
+            diners_banca += valors
