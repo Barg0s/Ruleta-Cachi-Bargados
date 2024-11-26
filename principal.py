@@ -330,6 +330,6 @@ def app_draw():
 
     pygame.display.update()  # Actualizar la pantalla
 
-
+  
 if __name__ == "__main__":
     main()
