@@ -150,10 +150,11 @@ def girar_ruleta():
             print("AAAAAAAAAAAAAAAAA")
             print(apuestas)
             print(f.obtener_valores_apuestas(seleccionado,apuestas,j.banca))
-            f.comprobar_aposta(seleccionado,apuestas,historial_complet)
+            f.comprobar_aposta(seleccionado,apuestas,historial_complet,j.jugadors)
+            f.bancarrota()
 
-            apuestas.clear()
             for jugador in j.jugadors:
+                apuestas.clear()
                 jugador["tipus"] = ""
                 jugador["aposta"] = []
 
@@ -341,7 +342,6 @@ def app_draw():
     t.draw_betting_buttons(screen)  # Dibujar botones de apuestas
     jd.gestio_turns(screen, font, j.jugadors, idx, apostar)  # Mostrar turno del jugador
     pygame.draw.circle(screen, CENICA, (300, 250), 100)  # Dibujar el círculo de la ruleta
-    utils.draw_grid(pygame, screen, 50)
 
     screen.blit(circulo_ruleta, (230, 180))  # Dibujar la imagen de la ruleta
     pygame.draw.circle(screen, GOLD, (300, 250), 100, 5)  # Círculos de bordes dorados

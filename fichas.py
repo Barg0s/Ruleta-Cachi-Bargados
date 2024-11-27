@@ -14,6 +14,20 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
 
+def bancarrota():
+    cnt = 0
+    for jugador in j.jugadors:
+        if jugador["diners"] == 0:
+           cnt += 1
+        if cnt >= 1:
+            print(f"Jugador{jugador} en bancarrota")
+        else:
+            print("Tots juguen")
+    if cnt == 3:
+        print("House edge")
+        pygame.quit()
+
+
 def contar_fitxes(screen,idx):
     y = 400
     font = pygame.font.Font(None, 24)
@@ -57,19 +71,22 @@ def distribuir_fitxes(jugadors, valors_fitxes):
                     diners_restants -= valor
 
 
-def comprobar_aposta(num,apuestas,historial_complet):
+def comprobar_aposta(num, apuestas, historial_complet, jugadors):
     especials = ["RED", "BLACK", "PAR", "IMP", "2to1", "2to2", "2to3"]
-    for jugador in j.jugadors:  # Cambiado de j.jugadors a jugadors
-        apuesta_jugador = jugador["aposta"]
-        tipus = jugador["tipus"]
+    for jugador in jugadors:
+        apuesta_jugador = jugador.get("aposta", 0)
+        tipus = jugador.get("tipus", "")
 
         if tipus in especials:
             print(f"Jugador {jugador['nom']} del tipus {tipus} ha apostat {apuesta_jugador}")
-            repartir_premis_especials(num, tipus, jugador,apuestas)
+            repartir_premis_especials(num, jugador, apuestas, tipus)
         else:
             print(f"Jugador {jugador['nom']} del tipus: {tipus} ha apostado: {apuesta_jugador}")
-            repartir_premis(num, jugador)
-        h.guardar_torn(historial_complet,f"El jugador {jugador['nom']} té {jugador['diners']}")
+            repartir_premis(num)
+        
+        # Guardar el estado del jugador en el historial
+        if 'diners' in jugador:
+            h.guardar_torn(historial_complet, f"El jugador {jugador['nom']} té {jugador['diners']}")
 
 
 def obtener_valores_apuestas(num,apuestas,banca):
@@ -78,78 +95,101 @@ def obtener_valores_apuestas(num,apuestas,banca):
         total += apuesta['value']
     if num not in apuestas:
             banca['diners'] += total
-def repartir_premis_especials(num, tipus, jugador,apuestas):
-    aposta = jugador["aposta"]
+
+def repartir_premis_especials(num, jugador, apuestas, tipus):
+    # Listas de números específicos para cada caso
+    numeros_negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+    numeros_rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
+
+    total_ganado = 0  # Inicializar la cantidad ganada por el jugador
+
     if tipus == "BLACK":
-        numeros_negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
-        total_ganado = 0
-
         if num in numeros_negros:
-            # Iterar por apuestas válidas para este jugador
+            print(f"El número {num} es un número negro.")
             for apuesta in apuestas:
-                if apuesta["jugador"] == jugador["nom"] and aposta == "BLACK":
-                    total_ganado += apuesta["value"] * 2
-
-            # Actualizar el dinero del jugador
-            jugador["diners"] += total_ganado
-            print(f"{jugador['nom']} ha ganado {total_ganado} con su apuesta BLACK. Saldo total: {jugador['diners']}.")
+                if apuesta["jugador"] == jugador["nom"]:
+                    premio = apuesta["value"] * 2
+                    total_ganado += premio
+                    jugador["diners"] += premio
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
         else:
-            print(f"{jugador['nom']} ha perdido con su apuesta BLACK.")
-
-
+            print(f"El número {num} no es un número negro.")
 
     elif tipus == "RED":
-        numeros_rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
         if num in numeros_rojos:
-            premio = sum(aposta) * 2
-            jugador["diners"] += premio
-            print(f"{jugador['nom']} ha ganado {premio} con su apuesta RED.")
+            print(f"El número {num} es un número rojo.")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    premio = apuesta["value"] * 2
+                    total_ganado += premio
+                    jugador["diners"] += premio
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+        else:
+            print(f"El número {num} no es un número rojo.")
 
     elif tipus == "PAR":
-        if num % 2 == 0:
-            premio = sum(aposta) * 2
-            jugador["diners"] += premio
-            print(f"{jugador['nom']} ha ganado {premio} con su apuesta PAR.")
+        if num % 2 == 0 and num != 0:
+            print(f"El número {num} es PAR.")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    premio = apuesta["value"] * 2
+                    total_ganado += premio
+                    jugador["diners"] += premio
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+        else:
+            print(f"El número {num} no es PAR.")
+
     elif tipus == "IMP":
         if num % 2 != 0:
-            premio = sum(aposta) * 2
-            jugador["diners"] += premio
-            print(f"{jugador['nom']} ha ganado {premio} con su apuesta IMP.")
+            print(f"El número {num} es IMPAR.")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    premio = apuesta["value"] * 2
+                    total_ganado += premio
+                    jugador["diners"] += premio
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+        else:
+            print(f"El número {num} no es IMPAR.")
+
     elif tipus == "2to1":
-         if num in t.betting_table[0]:
-            premio += 2
-            jugador["diners"] += premio
+        if num in t.betting_table[0]:  # Primera columna
+            print(f"El número {num} está en la línea 1 (2to1).")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    jugador["diners"] -= 20
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+
     elif tipus == "2to2":
-         if num in t.betting_table[1]:
-            premio += 2
-            jugador["diners"] += premio
+        if num in t.betting_table[1]:  # Segunda columna
+            print(f"El número {num} está en la línea 2 (2to2).")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    jugador["diners"] -= 20
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+
     elif tipus == "2to3":
-         if num in t.betting_table[2]:
-            premio += 2
-            jugador["diners"] += premio
+        if num in t.betting_table[2]:  # Tercera columna
+            print(f"El número {num} está en la línea 3 (2to3).")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    jugador["diners"] -= 20
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+
     elif tipus == "0":
-         if 0 in aposta:
-              premio += 4
-              jugador["diners"] +=premio
-    
+        if num == 0:
+            print("¡El número ganador es 0!")
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"]:
+                    premio = 60
+                    jugador["diners"] += premio
+                    print(f"{jugador['nom']} ha ganado {premio}. Saldo actual: {jugador['diners']}.")
+        else:
+            print(f"El número {num} no es 0.")
+
+    print(f"Total ganado por {jugador['nom']} con apuesta {tipus}: {total_ganado}")
 
 
-def repartir_premis(num, jugador):
-    """Maneja premios para apuestas no especiales."""
-    aposta = jugador["aposta"]
 
-    # Verificar si aposta está vacía o no es válida
-    if not aposta or not isinstance(aposta, list):
-        print(f"{jugador['nom']} no ha realizado ninguna apuesta válida.")
-        return
-
-    # Suponiendo que la apuesta contiene números específicos (y si no es así, se puede ajustar)
-    if num in aposta:
-        premio = sum(aposta) * 36  # Paga 36x el monto apostado
-        jugador["diners"] += premio
-        print(f"{jugador['nom']} ha ganado {premio} con su apuesta directa.")
-    else:
-        print(f"{jugador['nom']} ha perdido con su apuesta directa.")
 
 
 def gestionar_especials(idx,tipus):
