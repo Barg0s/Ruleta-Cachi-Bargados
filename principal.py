@@ -40,7 +40,7 @@ apostar = False
 # Definir la finestra
 screen = pygame.display.set_mode((860, 680))
 pygame.display.set_caption('Ruleta')
-mouse = {'x': -1, 'y': -1}
+mouse = {'x': -1, 'y': -1,'pressed': False}
 font = pygame.font.SysFont("Arial",22)
 carton_pos = (100, 450)
 carton_casilla_ancho = 50
@@ -50,7 +50,12 @@ carton_columnas = 12
 valors_fitxes = ([5,10,20,50,100])
 dragging_chip = None
 offset_x, offset_y = 0, 0
-
+close_button_rect = {
+        "x": 860 - 60,
+        "y": 10,
+        "width": 50,
+        "height": 25,
+    }
 # Definir botones
 buttons = [
     {'name': 'Girar', 'x': 500, 'y': 400, 'width': 100, 'height': 50, 'pressed': False},
@@ -140,10 +145,13 @@ def girar_ruleta():
             seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
             h.gestionar_nums(historial_ganador,seleccionado)
             print(apuestas)
+            h.guardar_torn(historial_complet,f"Ha sortit el numero: {seleccionado}")
             print(f"Seleccionado: {seleccionado}")
             print("AAAAAAAAAAAAAAAAA")
+            print(apuestas)
             print(f.obtener_valores_apuestas(seleccionado,apuestas,j.banca))
-            f.comprobar_aposta(seleccionado)
+            f.comprobar_aposta(seleccionado,apuestas,historial_complet)
+
             apuestas.clear()
             for jugador in j.jugadors:
                 jugador["tipus"] = ""
@@ -158,7 +166,7 @@ offset_x, offset_y = 0, 0  # Desplazamiento del ratón
 
 
 def app_events():
-    global mouse, angulo_actual, girando, angulo_velocidad, seleccionado, apostar, idx, dragging_chip, offset_x, offset_y,log_open,mostrar_surface
+    global mouse, angulo_actual, girando, angulo_velocidad, seleccionado, apostar, idx, dragging_chip, offset_x, offset_y,mostrar_surface
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
@@ -218,6 +226,7 @@ def app_events():
                         apuestas.append({'jugador': dragging_chip['owner'], 'posicion': pos, 'value': dragging_chip['value'], 'color': dragging_chip['color']})
 
                         numero = t.betting_table[row][col]
+                        h.guardar_torn(historial_complet,f"Aposta feta al {numero} amb {dragging_chip['value']} per {dragging_chip['owner']}")
                         print(f"Ficha colocada por {dragging_chip['owner']} en el número {numero}")
                         j.jugadors[idx]["diners"] -= dragging_chip['value']
                         j.jugadors[idx]["aposta"].append(numero)
@@ -239,6 +248,7 @@ def app_events():
                             dragging_chip['x'] = button['x'] + button['width'] // 2
                             dragging_chip['y'] = button['y'] + button['height'] // 2
                             apuestas.append({'jugador': dragging_chip['owner'], 'posicion': -1, 'value': dragging_chip['value'], 'color': dragging_chip['color'], 'label': button['label']})
+                            h.guardar_torn(historial_complet,f"Aposta feta a {button['label']} amb {dragging_chip['value']} per {dragging_chip['owner']}")
                             j.jugadors[idx]["diners"] -= dragging_chip['value']
                             j.jugadors[idx]["tipus"] = button['label']
                             f.gestionar_especials(idx,button['label'])
@@ -320,10 +330,8 @@ def dibujar_ruleta():
         txt = fontnum.render(str(casella), True, color_num)
         screen.blit(txt, (int(centre_quesito["x"] - txt.get_width() / 2), int(centre_quesito["y"] - txt.get_height() / 2)))  # Dibujar el número en cada casilla
 
-# Función para dibujar el historial de los ganadores
-# Dibujar
-
 def app_draw():
+    global mostrar_surface
     # Pintar el fondo de blanco
     screen.fill(WHITE)
     screen.blit(buen_fondo, (0, 0))  # Fondo de casino
@@ -354,15 +362,27 @@ def app_draw():
 
     h.mostrar_guanyadors(screen, seleccionado, historial_ganador)  # Mostrar historial de ganadores
 
-
     # Dibujar fichas y apuestas
     dibuixar_fitxes()
     dibuixar_apostes()
     f.contar_fitxes(screen,idx)
     if mostrar_surface:
-        s.dibuixar_surface(screen,font,mostrar_surface)
+        mostrar_surface = s.events_surface(mouse, close_button_rect, mostrar_surface)
+
+        # Dibujar todo en la pantalla
+        s.draw_surface()
+        s.draw_scroll_slider()
+        s.dibuixar_historial(historial_complet)
+        s.draw_close_button(close_button_rect)
+
+        # Actualizar la posición del scroll
+        s.update_scroll_position(mouse)
+        print(mostrar_surface)
+        pygame.display.update()  # Actualizar la pantalla
     pygame.display.update()  # Actualizar la pantalla
 
-  
+
+
+
 if __name__ == "__main__":
     main()

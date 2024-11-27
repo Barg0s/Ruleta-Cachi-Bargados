@@ -37,7 +37,11 @@ betting_table = [
 ]
 
 # Jugadores
-jugadors = j.jugadors
+jugadors = [
+    {"nom": "Taronja", "diners": 100, "fitxes": {"5": 2, "10": 2, "20": 1, "50": 1, "100": 0}, "aposta": [], "tipus":"","color": (255,128,0) },
+    {"nom": "Blau", "diners": 100, "fitxes":  {"5": 2, "10": 2, "20": 1, "50": 1, "100": 0}, "aposta": [], "tipus":"","color": (204,169,221)},
+    {"nom": "Lila", "diners": 100, "fitxes":  {"5": 2, "10": 2, "20": 1, "50": 1, "100": 0}, "aposta": [],"tipus":"", "color": (50, 120,200)}
+]
 turno_actual = 0
 
 # Botones

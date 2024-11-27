@@ -6,6 +6,7 @@ import jugadors as j
 import jugadors_dades as jd
 import tauler as t
 import random
+import historial as h
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (50, 120, 200)
@@ -56,7 +57,7 @@ def distribuir_fitxes(jugadors, valors_fitxes):
                     diners_restants -= valor
 
 
-def comprobar_aposta(num):
+def comprobar_aposta(num,apuestas,historial_complet):
     especials = ["RED", "BLACK", "PAR", "IMP", "2to1", "2to2", "2to3"]
     for jugador in j.jugadors:  # Cambiado de j.jugadors a jugadors
         apuesta_jugador = jugador["aposta"]
@@ -64,11 +65,11 @@ def comprobar_aposta(num):
 
         if tipus in especials:
             print(f"Jugador {jugador['nom']} del tipus {tipus} ha apostat {apuesta_jugador}")
-            repartir_premis_especials(num, tipus, jugador)
+            repartir_premis_especials(num, tipus, jugador,apuestas)
         else:
             print(f"Jugador {jugador['nom']} del tipus: {tipus} ha apostado: {apuesta_jugador}")
             repartir_premis(num, jugador)
-
+        h.guardar_torn(historial_complet,f"El jugador {jugador['nom']} té {jugador['diners']}")
 
 
 def obtener_valores_apuestas(num,apuestas,banca):
@@ -77,17 +78,25 @@ def obtener_valores_apuestas(num,apuestas,banca):
         total += apuesta['value']
     if num not in apuestas:
             banca['diners'] += total
-def repartir_premis_especials(num, tipus, jugador):
+def repartir_premis_especials(num, tipus, jugador,apuestas):
     aposta = jugador["aposta"]
-
     if tipus == "BLACK":
         numeros_negros = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+        total_ganado = 0
+
         if num in numeros_negros:
-            premio = sum(aposta) * 2  #Valores provisionales
-            jugador["diners"] += premio
-            print(f"{jugador['nom']} ha ganado {premio} con su apuesta BLACK.")
+            # Iterar por apuestas válidas para este jugador
+            for apuesta in apuestas:
+                if apuesta["jugador"] == jugador["nom"] and aposta == "BLACK":
+                    total_ganado += apuesta["value"] * 2
+
+            # Actualizar el dinero del jugador
+            jugador["diners"] += total_ganado
+            print(f"{jugador['nom']} ha ganado {total_ganado} con su apuesta BLACK. Saldo total: {jugador['diners']}.")
         else:
             print(f"{jugador['nom']} ha perdido con su apuesta BLACK.")
+
+
 
     elif tipus == "RED":
         numeros_rojos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
@@ -156,6 +165,7 @@ def gestionar_especials(idx,tipus):
             for num in negres:
                 if num not in aposta_jugador: 
                     aposta_jugador.append(num)
+    
     elif tipus == "RED":
             for num in vermells:
                 if num not in aposta_jugador:

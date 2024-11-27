@@ -43,8 +43,3 @@ def dibuixar_banca(screen,font,banca):
     screen.blit(diners_text,(435,75))
 
 
-def sumar_banca(jugadors,banca):
-        diners_banca = banca['diners']
-        for jugador in jugadors:
-            valors = int(jugador['value'])
-            diners_banca += valors

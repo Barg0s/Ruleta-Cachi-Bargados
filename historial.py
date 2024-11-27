@@ -36,5 +36,5 @@ def dibuixar_mini_log(screen):
 
 
 
-def afegir_accio(historial,accio):
+def guardar_torn(historial,accio):
     historial.append(accio)
