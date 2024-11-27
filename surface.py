@@ -84,7 +84,6 @@ def draw_close_button(close_button_rect):
 
 
 
-# Manejar eventos
 def events_surface(mouse, close_button_rect, show_surface):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

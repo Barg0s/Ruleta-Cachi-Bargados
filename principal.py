@@ -155,6 +155,7 @@ def girar_ruleta():
             apuestas.clear()
             for jugador in j.jugadors:
                 jugador["tipus"] = ""
+                jugador["aposta"] = []
 
 # Gestionar eventos
 dragging_chip = None  # Ficha actualmente siendo arrastrada
