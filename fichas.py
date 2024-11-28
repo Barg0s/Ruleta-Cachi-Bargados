@@ -14,6 +14,10 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
 
+def saltar_torn(idx,jugadors):
+    if jugadors[idx]["diners"] == 0:
+        idx += 1
+
 def bancarrota():
     cnt = 0
     for jugador in j.jugadors:

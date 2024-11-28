@@ -128,7 +128,7 @@ def main():
     sys.exit()
 
 def girar_ruleta():
-    global angulo_actual, angulo_velocidad, girando, seleccionado
+    global angulo_actual, angulo_velocidad, girando, seleccionado,idx
     if girando:
         # Actualizar el ángulo actual
         angulo_actual += angulo_velocidad
@@ -143,16 +143,11 @@ def girar_ruleta():
             flecha_angulo = (270 - angulo_actual) % 360 # averiguar donde esta la flecha
             segmento = int(flecha_angulo // (360 / len(rule))) #saber donde cayó la flecha( el // es para que divida a la baja)
             seleccionado = rule[segmento] #usa el segmento como index de la lista rule y pilla esa pos
-            h.gestionar_nums(historial_ganador,seleccionado)
-            print(apuestas)
             h.guardar_torn(historial_complet,f"Ha sortit el numero: {seleccionado}")
-            print(f"Seleccionado: {seleccionado}")
-            print("AAAAAAAAAAAAAAAAA")
-            print(apuestas)
             print(f.obtener_valores_apuestas(seleccionado,apuestas,j.banca))
             f.comprobar_aposta(seleccionado,apuestas,historial_complet,j.jugadors)
-            f.bancarrota()
-
+            f.bancarrota(screen)
+            f.saltar_torn(idx,j.jugadors)
             for jugador in j.jugadors:
                 apuestas.clear()
                 jugador["tipus"] = ""
@@ -194,14 +189,11 @@ def app_events():
                     if utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Girar":
                         girando = True
                         angulo_velocidad = random.randint(5, 37)  # Velocidad random
-                        print("¡Girando!")
                     elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Log":
                         mostrar_surface = True
                     elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Apostar":
                         apostar = True
-                        print("Apuesta hecha!")
                         idx = jd.gestio_turns(screen, font, j.jugadors, idx, apostar)
-                         # Añadir fichas para el siguiente jugador
                         apostar = False
                         f.distribuir_fitxes(j.jugadors,valors_fitxes)
                         afegir_fitxes()
@@ -229,18 +221,15 @@ def app_events():
 
                         numero = t.betting_table[row][col]
                         h.guardar_torn(historial_complet,f"Aposta feta al {numero} amb {dragging_chip['value']} per {dragging_chip['owner']}")
-                        print(f"Ficha colocada por {dragging_chip['owner']} en el número {numero}")
                         j.jugadors[idx]["diners"] -= dragging_chip['value']
                         j.jugadors[idx]["aposta"].append(numero)
                         j.jugadors[idx]["tipus"] = "Individual"
-                        print(j.jugadors[idx]["aposta"])
                         chips.remove(dragging_chip)
                         break
                 else:
                     # Verificar casillas especiales
                     for button in t.custom_buttons:
                         if utils.is_point_in_rect({'x': dragging_chip['x'], 'y': dragging_chip['y']}, button):
-                            print(f"Ficha colocada en {button['label']} por {dragging_chip['owner']}")
                             jugador_actual = None
                             for jugador in j.jugadors:
                                 if jugador["nom"] == dragging_chip["owner"]:
@@ -378,7 +367,6 @@ def app_draw():
 
         # Actualizar la posición del scroll
         s.update_scroll_position(mouse)
-        print(mostrar_surface)
         pygame.display.update()  # Actualizar la pantalla
     pygame.display.update()  # Actualizar la pantalla
 

@@ -19,22 +19,24 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Scroll Test")
 
 # Crear Surface grande
-surface = pygame.Surface((SCREEN_WIDTH, 700)) 
+surface = pygame.Surface((SCREEN_WIDTH, 1500)) 
 surface.fill(WHITE)
 
 # Dibujar contenido en la Surface
-font = pygame.font.SysFont("Arial", 20)
+font = pygame.font.SysFont("Arial", 15)
 def dibuixar_historial(historial):
-    for cnt,accio in enumerate(historial):
+    y = 100
+    for accio in (historial):
         text = font.render(accio,True,BLACK)
-        surface.blit(text,(50,cnt * 40))
+        surface.blit(text,(50,y))
+        y += 25
 
 # Configuración del scroll
 scroll = {
     "x": SCREEN_WIDTH - 20,  
     "y": 50,
     "width": 10,
-    "height": 680,  
+    "height": 600,  
     "radius": 10,
     "percentage": 0,  
     "dragging": False,
@@ -66,14 +68,20 @@ def update_scroll_position(mouse):
         max_scroll_y = scroll["y"] + scroll["height"] - scroll["radius"]
         min_scroll_y = scroll["y"] + scroll["radius"]
         relative_y = max(min(mouse["y"], max_scroll_y), min_scroll_y)
+        
+        # Actualiza el porcentaje basado en la posición del mouse
         scroll["percentage"] = ((relative_y - min_scroll_y) / (max_scroll_y - min_scroll_y)) * 100
 
-    scroll["surface_offset"] = int((scroll["percentage"] / 100) * (surface.get_height() - SCREEN_HEIGHT))
+    # Calcula el desplazamiento proporcional
+    max_offset = surface.get_height() - SCREEN_HEIGHT
+    scroll["surface_offset"] = int((scroll["percentage"] / 100) * max_offset)
+
 
 # Dibujar el contenido desplazable
 def draw_surface():
     sub_surface = surface.subsurface((0, scroll["surface_offset"], SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.blit(sub_surface, (0,0))
+    screen.blit(sub_surface, (0, 0))
+
 
 # Dibujar el botón de cierre
 def draw_close_button(close_button_rect):
