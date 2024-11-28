@@ -23,7 +23,11 @@ VERDE = (0, 100, 0)
 circulo_ruleta = pygame.image.load("circuloruleta.png")
 fondo = pygame.image.load("casinofondo.png")
 buen_fondo = pygame.transform.scale(fondo,(860,680))
+pygame.mixer.music.load("LuigiCasino.ogg")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.1)
 pygame.init()
+
 clock = pygame.time.Clock()
 historial_ganador = []
 historial_complet = []
@@ -146,7 +150,8 @@ def girar_ruleta():
             h.guardar_torn(historial_complet,f"Ha sortit el numero: {seleccionado}")
             print(f.obtener_valores_apuestas(seleccionado,apuestas,j.banca))
             f.comprobar_aposta(seleccionado,apuestas,historial_complet,j.jugadors)
-            f.bancarrota(screen)
+            historial_ganador.append(seleccionado)
+            f.bancarrota()
             f.saltar_torn(idx,j.jugadors)
             for jugador in j.jugadors:
                 apuestas.clear()
@@ -188,6 +193,9 @@ def app_events():
                     afegir_fitxes() 
                     if utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Girar":
                         girando = True
+                        ruleta = pygame.mixer.Sound("girar.mp3")
+                        ruleta.set_volume(0.2)
+                        ruleta.play()
                         angulo_velocidad = random.randint(5, 37)  # Velocidad random
                     elif utils.is_point_in_rect(mouse, button) and not girando and button['name'] == "Log":
                         mostrar_surface = True
@@ -201,6 +209,9 @@ def app_events():
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if dragging_chip:
+                fitxa = pygame.mixer.Sound("chip.mp3")
+                fitxa.set_volume(0.2)
+                fitxa.play()
                 # Verificar casillas normales
                 for button in t.betting_buttons:
                     if utils.is_point_in_rect({'x': dragging_chip['x'], 'y': dragging_chip['y']}, button):
@@ -262,6 +273,7 @@ def app_events():
             mouse_pos = pygame.mouse.get_pos()
             dragging_chip['x'] = mouse_pos[0] - offset_x
             dragging_chip['y'] = mouse_pos[1] - offset_y
+
     girar_ruleta()
 
     return True
